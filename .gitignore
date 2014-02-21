@@ -1,0 +1,9 @@
+bin/*
+bin\*
+doc/*
+doc\*
+.classpath
+.settings
+.project
+*.class
+*.jar
