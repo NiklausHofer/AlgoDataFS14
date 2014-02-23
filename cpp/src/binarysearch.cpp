@@ -48,6 +48,13 @@ void printArray( long size, int a[] )
     cout << a[i] << endl;
 }
 
+void hPrintArray( long size, int a[] )
+{
+  for( int i = 0; i< size; i++ )
+    cout << a[i] << "; ";
+  cout << endl;
+}
+
 int find( long size, int a[], int search )
 {
   int retval = -1;
@@ -83,6 +90,29 @@ int find( long size, int a[], int search )
  */
 int partition( long size, int a[], int from, int to )
 {
+  int left = from;
+  int right = to -1;
+  int pivot = a[to];
+
+  while( left < right )
+  {
+    while( a[left] <= pivot && left < to )
+      left++;
+
+    while( a[right] > pivot && right > from )
+      right--;
+
+    // Vertausche die Werte nur dann, wenn sich rechts und links
+    // noch nicht ueberschnitten haben!
+    if( left < right )
+      swap( size, a, left, right );
+  }
+
+  // bringe den Pivot an die richtige Position
+  if( a[left] > pivot )
+    swap( size, a, left, to );
+
+  return left;
 }
 
 /**
