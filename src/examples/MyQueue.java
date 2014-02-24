@@ -11,13 +11,13 @@ package examples;
 public class MyQueue<E> implements Queue<E> {
 	
 	//instance variables 
-	private E[] buf;
+	private E[] buf = (E[]) new Object[2];
 	private int size;
 	private int inPos, outPos;
 	
 	
 	private void expand(){
-		// expand (double) the buf array
+		throw new RuntimeException("expanding not yet implemented");
 	}
 	
 	/* (non-Javadoc)
@@ -25,8 +25,10 @@ public class MyQueue<E> implements Queue<E> {
 	 */
 	@Override
 	public void enqueue(E o) {
-		// TODO Auto-generated method stub
-
+		if (size == buf.length) expand();
+		if (inPos == buf.length) inPos = 0;
+		buf[inPos++] = o;
+		size++;
 	}
 
 	/* (non-Javadoc)
@@ -34,8 +36,11 @@ public class MyQueue<E> implements Queue<E> {
 	 */
 	@Override
 	public E dequeue() {
-		// TODO Auto-generated method stub
-		return null;
+		if (size==0) throw new RuntimeException(" empty queue");
+		if (outPos==buf.length) outPos = 0;
+		size--;
+		return buf[outPos++];
+		
 	}
 
 	/* (non-Javadoc)
@@ -43,7 +48,6 @@ public class MyQueue<E> implements Queue<E> {
 	 */
 	@Override
 	public E head() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -52,8 +56,7 @@ public class MyQueue<E> implements Queue<E> {
 	 */
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		return size;
 	}
 
 	/* (non-Javadoc)
@@ -61,16 +64,22 @@ public class MyQueue<E> implements Queue<E> {
 	 */
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
+		return size==0;
 	}
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+	
+		Queue<String> q = new MyQueue<>();
+		q.enqueue("hallo 1");
+//		String s = q.dequeue();
+//		System.out.println(s);
+		q.enqueue("hallo 2");
+		q.enqueue("hallo 3");
+		String s = q.dequeue();
+		System.out.println(s);
 	}
 
 }
