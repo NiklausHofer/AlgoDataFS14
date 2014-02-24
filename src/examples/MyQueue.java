@@ -17,7 +17,13 @@ public class MyQueue<E> implements Queue<E> {
 	
 	
 	private void expand(){
-		throw new RuntimeException("expanding not yet implemented");
+		E [] oldBuf = buf;
+		buf =  (E[]) new Object[2*size];
+		for (int i=0; i < size;i++){
+			buf[i] = oldBuf[outPos++ % size]; 
+		}
+		outPos=0;
+		inPos=size;
 	}
 	
 	/* (non-Javadoc)
@@ -48,7 +54,8 @@ public class MyQueue<E> implements Queue<E> {
 	 */
 	@Override
 	public E head() {
-		return null;
+		if (size==0) throw new RuntimeException(" empty queue");
+		return buf[outPos % buf.length];  
 	}
 
 	/* (non-Javadoc)
@@ -74,12 +81,17 @@ public class MyQueue<E> implements Queue<E> {
 	
 		Queue<String> q = new MyQueue<>();
 		q.enqueue("hallo 1");
-//		String s = q.dequeue();
-//		System.out.println(s);
-		q.enqueue("hallo 2");
-		q.enqueue("hallo 3");
 		String s = q.dequeue();
 		System.out.println(s);
+		q.enqueue("hallo 2");
+		q.enqueue("hallo 3");
+		q.enqueue("hallo 4");
+		System.out.println("size: "+q.size());
+		int len = q.size();
+		for (int i=0;i<len;i++){
+			s = q.dequeue();
+			System.out.println(s);
+		}
 	}
 
 }
