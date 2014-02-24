@@ -135,9 +135,11 @@ void quicksort( long size, int a[] )
 
 int main( int ac, char* av[] )
 {
-  long size = 100;
+  long size = 101;
 
-  srand(52);
+  time_t timeObj = time( NULL );
+
+  srand( time( &timeObj ) );
 
   int a [size];
 
@@ -147,7 +149,7 @@ int main( int ac, char* av[] )
   //bubbleSort(size, a);
   quicksort(size, a);
 
-  printArray( size, a );
+  //printArray( size, a );
 
   cout << sortCheck( size, a ) << endl;
 
