@@ -92,7 +92,7 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_binarySearch_OBJECTS = binarysearch.$(OBJEXT)
 binarySearch_OBJECTS = $(am_binarySearch_OBJECTS)
-binarySearch_LDADD = $(LDADD)
+binarySearch_DEPENDENCIES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -241,6 +241,7 @@ top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 AM_CXXFLAGS = -Wall -pipe
 binarySearch_SOURCES = binarysearch.cpp
+binarySearch_LDADD = -lboost_program_options
 all: all-am
 
 .SUFFIXES:

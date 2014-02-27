@@ -1,6 +1,9 @@
 #include <iostream>
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */
+#include <boost/program_options.hpp>
+
+namespace po = boost::program_options;
 
 using namespace std;
 
@@ -124,6 +127,8 @@ void quicksort( long size, int a[], int from, int to )
     return;
 
   int pos = partition( size, a, from, to );
+  // The element at pos is already at the right position for sure
+  // so we don't need to include that in any further sorting.
   quicksort( size, a, from, pos-1 );
   quicksort( size, a, pos+1, to );
 }
@@ -135,25 +140,101 @@ void quicksort( long size, int a[] )
 
 int main( int ac, char* av[] )
 {
-  long size = 101;
+  long size;
+  long seed;
+  string algorithm;
+  bool verbose = false;
+  int searchedValue;
 
-  time_t timeObj = time( NULL );
+  po::options_description clio("Command line options");
+  clio.add_options()
+    ("help,h", "Print help message")
+    ("verbose,v", "Run in verbose mode")
+    ("array-size", po::value<long>(&size)->default_value(1000), "Size of the array")
+    ("algorithm,a", po::value<string>(&algorithm)->default_value("quicksort"), "Chose the algoirthm for sorting")
+    ("seed,s", po::value<long>(&seed)->default_value(0), "Chose a seed for the SRNG")
+    ("insecure", "Do not check if the array was sorted correcly")
+    ("searched-value", po::value<int>(&searchedValue)->default_value(-1), "Value we're looking for in the array")
+    ;
 
-  srand( time( &timeObj ) );
+  po::variables_map vm;
+  po::store(po::parse_command_line(ac, av, clio), vm);
+  po::notify(vm);
+
+  if( vm.count("help") )
+  {
+    cout << clio << endl;
+    return 0;
+  }
+
+  verbose = vm.count("verbose");
+  if( verbose )
+    cout << "running in verbose mode" << endl;
+
+  if( seed == 0 )
+  {
+    time_t timeObj = time( NULL );
+    seed = time( &timeObj );
+    if( verbose )
+      cout << "Seed, retrieved from current time: " << seed << endl;
+  }
+  else
+  {
+    if(  verbose )
+      cout << "seed has been defined by the user to be: " << seed << endl;
+  }
+  srand( seed );
+
+  if( verbose )
+    cout << "The size of the array will be: " << size << endl;
 
   int a [size];
 
+  // Filling the array
   for( int i =0; i<size; i++ )
     a[i] = rand() % size + 1;
 
-  //bubbleSort(size, a);
-  quicksort(size, a);
+  if( algorithm == "quicksort" )
+    quicksort(size, a);
+  else if ( algorithm == "bubblesort" )
+    bubbleSort(size, a);
+  else 
+  {
+    cerr << "Sorry, unknown sorting algorithm \"" << algorithm << "\"" << endl;
+    return 1;
+  }
 
-  //printArray( size, a );
+  if( verbose )
+    cout << "Algorithm used for sorting: " << algorithm << endl;
 
-  cout << sortCheck( size, a ) << endl;
+  if( verbose )
+    printArray( size, a );
 
-  //cout << find( size, a, 42 ) << endl;
+  if(! vm.count("insecure") )
+  {
+    if( ! sortCheck( size, a ) )
+    {
+      cout << "WARNING: Array was not sorted correctly! Aborting now!" << endl;
+      return 1;
+    }
+    else
+      cout << "The array has been sorted correctly." << endl;
+  }
+  else if( verbose )
+    cout << "WARNING: Not checking if the array was sorted correctly!" << endl;
+
+  if( searchedValue >= 0 )
+  {
+    if( verbose )
+      cout << "Looking for the value " << searchedValue << endl;
+
+    cout << find( size, a, 42 ) << endl;
+  }
+  else
+  {
+    if( verbose )
+      cout << "Not looking for any value" << endl;
+  }
 
   return 0;
 }
