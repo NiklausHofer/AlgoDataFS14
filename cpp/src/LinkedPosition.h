@@ -1,7 +1,7 @@
 #ifndef LINKEDPOSITION_H
 #define LINKEDPOSITION_H
 
-#include "Listerface.h"
+//#include "Listerface.h"
 #include "LinkedList.h"
 #include "Position.h"
 
@@ -13,23 +13,20 @@ class LinkedPosition : public Position<T>
     LinkedPosition * next;
     LinkedPosition * previous;
     Listerface<T> * list;
-    LinkedPosition( Listerface<T> * list );
 
   public:
+    LinkedPosition();
+    LinkedPosition( Listerface<T> * list );
     T * getElement();
-    //LinkedPosition();
 
-    //friend class LinkedList<T>;
+    friend class LinkedList<T>;
 };
 
-/*
 template <typename T>
 LinkedPosition<T>::LinkedPosition()
 {
 }
-*/
 
-/*
 template <typename T>
 LinkedPosition<T>::LinkedPosition( Listerface<T> * list )
 {
@@ -41,6 +38,5 @@ T * LinkedPosition<T>::getElement()
 {
   return element;
 }
-*/
 
 #endif

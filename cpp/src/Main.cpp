@@ -10,8 +10,7 @@ int main( int argc, const char* argv[] )
   //LinkedList<int> * foo;
   //foo = new LinkedList<int>();
 
-  LinkedList<int> foo();
-  foo.isEmpty();
+  LinkedList<int> * foo = new LinkedList<int>();
 
   return 0;
 }

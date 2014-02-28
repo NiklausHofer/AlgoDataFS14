@@ -1,8 +1,8 @@
 #ifndef LINKEDLIST_H
 #define LINKEDLIST_H
 
-#include "Position.h"
 #include "LinkedPosition.h"
+//#include "Position.h"
 #include "Listerface.h"
 
 template<typename T>
@@ -11,6 +11,7 @@ class LinkedList : public Listerface<T>
   private:
     Position<T> * firstElem;
     Position<T> * lastElem;
+    LinkedPosition<T> * myPos;
 
   public:
     LinkedList();
@@ -32,7 +33,6 @@ class LinkedList : public Listerface<T>
     bool isEmpty();
 };
 
-/*
 template <typename T>
 LinkedList<T>::LinkedList()
 {
@@ -120,7 +120,5 @@ bool LinkedList<T>::isEmpty()
 {
   return false;
 }
-*/
 
 #endif
-
