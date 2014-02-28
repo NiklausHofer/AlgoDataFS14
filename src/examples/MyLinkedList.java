@@ -32,9 +32,14 @@ public class MyLinkedList<E> implements List<E> {
 
 	
 	private LLNode checkAndCast(Position<E> p){
-		LLNode n = (LLNode) p;
-		if (n.owner != this) throw new RuntimeException(" invalid position!");
-		return n;
+		try {
+			LLNode n = (LLNode) p;			
+			if (n.owner == null) throw new RuntimeException(" allready removed position!");
+			if (n.owner != this) throw new RuntimeException(" position belongs to another MyLinkedList instance");
+			return n;
+		} catch (ClassCastException e) {
+			throw new RuntimeException(" position belongs to another container-type ");
+		}
 	}
 	
 	/* (non-Javadoc)
@@ -74,8 +79,7 @@ public class MyLinkedList<E> implements List<E> {
 	 */
 	@Override
 	public Position<E> next(Position<E> p) {
-		// TODO Auto-generated method stub
-		return null;
+		return checkAndCast(p).next;
 	}
 
 	/* (non-Javadoc)
@@ -83,8 +87,7 @@ public class MyLinkedList<E> implements List<E> {
 	 */
 	@Override
 	public Position<E> previous(Position<E> p) {
-		// TODO Auto-generated method stub
-		return null;
+		return checkAndCast(p).prev;
 	}
 
 	/* (non-Javadoc)
@@ -92,8 +95,10 @@ public class MyLinkedList<E> implements List<E> {
 	 */
 	@Override
 	public E replaceElement(Position<E> p, E o) {
-		// TODO Auto-generated method stub
-		return null;
+		LLNode n = checkAndCast(p);
+		E old = n.element();
+		n.elem = o;
+		return old; 
 	}
 
 	/* (non-Javadoc)
@@ -117,8 +122,14 @@ public class MyLinkedList<E> implements List<E> {
 	 */
 	@Override
 	public Position<E> insertLast(E o) {
-		// TODO Auto-generated method stub
-		return null;
+		LLNode n = new LLNode();
+		n.elem = o;
+		n.prev = last;
+		if (last != null) first.next = n;
+		else first = n;
+		last = n;
+		size++;
+		return n;
 	}
 
 	/* (non-Javadoc)
@@ -126,8 +137,15 @@ public class MyLinkedList<E> implements List<E> {
 	 */
 	@Override
 	public Position<E> insertBefore(Position<E> p, E o) {
-		// TODO Auto-generated method stub
-		return null;
+		LLNode n = checkAndCast(p);
+		LLNode newN = new LLNode();
+		newN.elem = o;
+		newN.next = n;
+		newN.prev = n.prev;
+		if (n.prev != null) n.prev.next = newN;
+		n.prev = newN;
+		size++;
+		return newN;
 	}
 
 	/* (non-Javadoc)
@@ -135,8 +153,15 @@ public class MyLinkedList<E> implements List<E> {
 	 */
 	@Override
 	public Position<E> insertAfter(Position<E> p, E o) {
-		// TODO Auto-generated method stub
-		return null;
+		LLNode n = checkAndCast(p);
+		LLNode newN = new LLNode();
+		newN.elem = o;
+		newN.prev = n;
+		newN.next = n.next;
+		if (n.next != null) n.next.prev = newN;
+		n.next = newN;
+		size++;
+		return newN;
 	}
 
 	/* (non-Javadoc)
@@ -144,8 +169,13 @@ public class MyLinkedList<E> implements List<E> {
 	 */
 	@Override
 	public void remove(Position<E> p) {
-		// TODO Auto-generated method stub
-
+		LLNode n = checkAndCast(p);
+		if (n.next != null) n.next.prev = n.prev;
+		if (n.prev != null) n.prev.next = n.next;
+		if (n==first) first = n.next;
+		if (n==last) last = n.prev;
+		n.owner = null; // make the node invalid
+		size--;
 	}
 
 	/* (non-Javadoc)
@@ -154,7 +184,26 @@ public class MyLinkedList<E> implements List<E> {
 	@Override
 	public Iterator<Position<E>> positions() {
 		// TODO Auto-generated method stub
-		return null;
+		return new Iterator<Position<E>>() {
+
+			@Override
+			public boolean hasNext() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public Position<E> next() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public void remove() {
+				// TODO Auto-generated method stub
+				
+			}
+		};
 	}
 
 	/* (non-Javadoc)
@@ -171,8 +220,7 @@ public class MyLinkedList<E> implements List<E> {
 	 */
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		return size;
 	}
 
 	/* (non-Javadoc)
@@ -180,8 +228,7 @@ public class MyLinkedList<E> implements List<E> {
 	 */
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
+		return size == 0;
 	}
 
 	/**
@@ -189,9 +236,19 @@ public class MyLinkedList<E> implements List<E> {
 	 */
 	public static void main(String[] args) {
 
-		List<String> l = new MyLinkedList<>();
-		l.insertFirst("hallo 1");
-		System.out.println(l.first().element());
+		List<String> li = new MyLinkedList<>();
+		List<String> li2 = new MyLinkedList<>();
+		Position<String> p1 =  li.insertFirst("hallo 1");
+		Position<String>  pm  = li.insertFirst("hallo 2");
+		li.insertFirst("hallo 3");
+		Position p = li.first();
+		// li.remove(pm);
+		li.insertAfter(pm,"hallo 2a");
+		li.remove(pm);
+		while (p!=null){
+			System.out.println(p.element());
+			p = li.next(p);
+		}
 	}
 
 }
