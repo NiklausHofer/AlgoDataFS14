@@ -10,7 +10,9 @@ import java.util.Iterator;
  *
  */
 public class MyLinkedList<E> implements List<E> {
+
 	class LLNode implements Position<E>{
+		Object owner = MyLinkedList.this;
 		LLNode prev,next; // neighbours of this node
 		E elem;
 
@@ -27,6 +29,13 @@ public class MyLinkedList<E> implements List<E> {
 	// instance variables:
 	private LLNode first,last;
 	private int size;
+
+	
+	private LLNode checkAndCast(Position<E> p){
+		LLNode n = (LLNode) p;
+		if (n.owner != this) throw new RuntimeException(" invalid position!");
+		return n;
+	}
 	
 	/* (non-Javadoc)
 	 * @see examples.List#first()
@@ -49,8 +58,7 @@ public class MyLinkedList<E> implements List<E> {
 	 */
 	@Override
 	public boolean isFirst(Position<E> p) {
-		// TODO Auto-generated method stub
-		return false;
+		return first == checkAndCast(p);
 	}
 
 	/* (non-Javadoc)
@@ -58,8 +66,7 @@ public class MyLinkedList<E> implements List<E> {
 	 */
 	@Override
 	public boolean isLast(Position<E> p) {
-		// TODO Auto-generated method stub
-		return false;
+		return last == checkAndCast(p);
 	}
 
 	/* (non-Javadoc)
@@ -103,6 +110,7 @@ public class MyLinkedList<E> implements List<E> {
 		size++;
 		return n;
 	}
+	
 
 	/* (non-Javadoc)
 	 * @see examples.List#insertLast(java.lang.Object)
