@@ -4,6 +4,7 @@
 #include "LinkedPosition.h"
 //#include "Position.h"
 #include "Listerface.h"
+#include <string>
 
 template<typename T>
 class LinkedList : public Listerface<T>
@@ -36,7 +37,6 @@ class LinkedList : public Listerface<T>
 template <typename T>
 LinkedList<T>::LinkedList()
 {
-  //LinkedPosition<T> * foo = new LinkedPosition<T>(this);
 }
 
 template <typename T>
@@ -84,7 +84,9 @@ T * LinkedList<T>::replaceElement( Position<T> *p, T *o )
 template <typename T>
 Position<T> * LinkedList<T>::insertFirst( T *o )
 {
-  return NULL;
+  firstElem = new LinkedPosition<T>(this);
+  ((LinkedPosition<T>*)firstElem)->element = o;
+  return firstElem;
 }
 
 template <typename T>

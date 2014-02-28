@@ -1,9 +1,18 @@
 #ifndef LINKEDPOSITION_H
 #define LINKEDPOSITION_H
 
-//#include "Listerface.h"
-#include "LinkedList.h"
-#include "Position.h"
+#include "Listerface.h"
+
+// Can't include LinkedList, that would lead to circular dependencies
+//#include "LinkedList.h"
+//#include "Position.h"
+
+//template <typename T>
+//class Listerface;
+// Forward declare LinkedList<T> 
+template <typename T>
+class LinkedList;
+//class LinkedList : public Listerface<T>;
 
 template <typename T>
 class LinkedPosition : public Position<T>
@@ -13,10 +22,10 @@ class LinkedPosition : public Position<T>
     LinkedPosition * next;
     LinkedPosition * previous;
     Listerface<T> * list;
-
-  public:
     LinkedPosition();
     LinkedPosition( Listerface<T> * list );
+
+  public:
     T * getElement();
 
     friend class LinkedList<T>;
