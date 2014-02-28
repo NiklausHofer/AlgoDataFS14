@@ -144,6 +144,7 @@ public class MyLinkedList<E> implements List<E> {
 		newN.prev = n.prev;
 		if (n.prev != null) n.prev.next = newN;
 		n.prev = newN;
+		if (n==first) first = newN;
 		size++;
 		return newN;
 	}
@@ -160,6 +161,7 @@ public class MyLinkedList<E> implements List<E> {
 		newN.next = n.next;
 		if (n.next != null) n.next.prev = newN;
 		n.next = newN;
+		if (n==last) last = newN;
 		size++;
 		return newN;
 	}
@@ -183,25 +185,25 @@ public class MyLinkedList<E> implements List<E> {
 	 */
 	@Override
 	public Iterator<Position<E>> positions() {
-		// TODO Auto-generated method stub
 		return new Iterator<Position<E>>() {
+			LLNode currentPos = first; 
 
 			@Override
 			public boolean hasNext() {
-				// TODO Auto-generated method stub
-				return false;
+				return currentPos != null;
 			}
 
 			@Override
 			public Position<E> next() {
-				// TODO Auto-generated method stub
-				return null;
+				LLNode n = currentPos;
+				currentPos = currentPos.next;
+				return n;
 			}
 
 			@Override
 			public void remove() {
-				// TODO Auto-generated method stub
-				
+				throw new UnsupportedOperationException(
+						" please use the remove operation of MyLinkedList ");
 			}
 		};
 	}
@@ -211,8 +213,28 @@ public class MyLinkedList<E> implements List<E> {
 	 */
 	@Override
 	public Iterator<E> elements() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Iterator<E>() {
+			LLNode currentPos = first; 
+
+			@Override
+			public boolean hasNext() {
+				return currentPos != null;
+			}
+
+			@Override
+			public E next() {
+				E e = currentPos.elem;
+				currentPos = currentPos.next;
+				return e;
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException(
+						" please use the remove operation of MyLinkedList ");
+			}
+
+		};
 	}
 
 	/* (non-Javadoc)
@@ -237,11 +259,11 @@ public class MyLinkedList<E> implements List<E> {
 	public static void main(String[] args) {
 
 		List<String> li = new MyLinkedList<>();
-		List<String> li2 = new MyLinkedList<>();
+//		List<String> li2 = new MyLinkedList<>();
 		Position<String> p1 =  li.insertFirst("hallo 1");
 		Position<String>  pm  = li.insertFirst("hallo 2");
 		li.insertFirst("hallo 3");
-		Position p = li.first();
+		Position<String> p = li.first();
 		// li.remove(pm);
 		li.insertAfter(pm,"hallo 2a");
 		li.remove(pm);
