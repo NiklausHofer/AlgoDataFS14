@@ -83,7 +83,7 @@ public class SortTest {
 		// now a[to..piv-1] <= a[piv] and 
 		// a[piv+1..to]>=a[piv]
 		qSort(a,from,piv-1);
-		qSort(a,piv+1,to);
+		qSort(a,piv,to);
 	}
 
 	/**
@@ -148,7 +148,7 @@ public class SortTest {
 		// new array
 		int [] a = new int[n];
 		// fill it randomly
-		for (int i=0;i<a.length;i++) a[i]=rand.nextInt(n);
+		for (int i=0;i<a.length;i++) a[i]=1; rand.nextInt(n);
 		cnt=0;  // for statistcs reasons
 		// get Time
 		te1=System.currentTimeMillis();
