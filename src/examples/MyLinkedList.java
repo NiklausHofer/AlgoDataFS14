@@ -3,6 +3,7 @@
  */
 package examples;
 
+import java.security.acl.Owner;
 import java.util.Iterator;
 
 /**
@@ -160,8 +161,8 @@ public class MyLinkedList<E> implements List<E> {
 		newN.prev = n;
 		newN.next = n.next;
 		if (n.next != null) n.next.prev = newN;
+		else last = newN;
 		n.next = newN;
-		if (n==last) last = newN;
 		size++;
 		return newN;
 	}
@@ -171,7 +172,13 @@ public class MyLinkedList<E> implements List<E> {
 	 */
 	@Override
 	public void remove(Position<E> p) {
-		// ......
+		LLNode n = checkAndCast(p);
+		if (n != first) n.prev.next = n.next;
+		else first = n.next;
+		if (n != last) n.next.prev = n.prev;
+		else last = n.prev;
+		n.owner = null; // make n invalid 
+		size --;
 	}
 
 	/* (non-Javadoc)
