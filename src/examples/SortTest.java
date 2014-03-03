@@ -104,16 +104,14 @@ public class SortTest {
 	      swap(a,rand.nextInt(to-from)+from,med);
 	      int pivot = a[med];
 	      while (i <= j) {
-	            while (a[i] < pivot)
-	                  i++;
-	            while (a[j] > pivot)
-	                  j--;
+	            while (a[i] < pivot) i++;
+	            while (a[j] > pivot)j--;
 	            if (i <= j) {
 	            	swap(a,i,j);
-	                  i++;
-	                  j--;
+	                i++;
+	                j--;
 	            }
-	      };
+	      }
 	      return i;
 	}	
 	
@@ -148,7 +146,7 @@ public class SortTest {
 		// new array
 		int [] a = new int[n];
 		// fill it randomly
-		for (int i=0;i<a.length;i++) a[i]=1; rand.nextInt(n);
+		for (int i=0;i<a.length;i++) a[i]=rand.nextInt(n);
 		cnt=0;  // for statistcs reasons
 		// get Time
 		te1=System.currentTimeMillis();

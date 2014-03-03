@@ -171,13 +171,7 @@ public class MyLinkedList<E> implements List<E> {
 	 */
 	@Override
 	public void remove(Position<E> p) {
-		LLNode n = checkAndCast(p);
-		if (n.next != null) n.next.prev = n.prev;
-		if (n.prev != null) n.prev.next = n.next;
-		if (n==first) first = n.next;
-		if (n==last) last = n.prev;
-		n.owner = null; // make the node invalid
-		size--;
+		// ......
 	}
 
 	/* (non-Javadoc)
