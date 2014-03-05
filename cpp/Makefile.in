@@ -279,7 +279,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 AC_CONFIG_AUX_DIR = config
-SUBDIRS = src
+SUBDIRS = src test
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 

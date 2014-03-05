@@ -7,7 +7,7 @@ AM_INIT_AUTOMAKE([foreign])
 #AC_CONFIG_SRCDIR([test/CheckingAccountTest.cpp])
 AC_CONFIG_HEADERS([config.h])
 
-AC_OUTPUT(Makefile src/Makefile)
+AC_OUTPUT(Makefile src/Makefile test/Makefile)
 
 # Checks for programs.
 AC_PROG_CXX
