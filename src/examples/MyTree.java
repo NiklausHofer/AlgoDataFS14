@@ -15,12 +15,12 @@ public class MyTree<E> implements Tree<E> {
 	// TNode auxiliary class
 	class TNode implements Position<E>{
 		TNode parent;
-		MyLinkedList children = new MyLinkedList<>();
+		MyLinkedList<TNode> children = new MyLinkedList<>();
 		E elem;
 		Position<TNode> myChildrenposition; // if we have a parent
-											// then we are in a LinkedList
+		// then we are in a LinkedList
 		Object owner = MyTree.this;
-		
+
 
 		/* (non-Javadoc)
 		 * @see examples.Position#element()
@@ -29,12 +29,12 @@ public class MyTree<E> implements Tree<E> {
 		public E element() {
 			return elem;
 		}
-		
+
 	}
-	
+
 	// instance variables of MyTree
-	
-	private TNode  root;
+
+	private TNode root;
 	private int size;
 
 	/* (non-Javadoc)
@@ -54,7 +54,8 @@ public class MyTree<E> implements Tree<E> {
 		TNode n = new TNode();
 		n.elem=o;
 		size++;
-		return null;
+		root = n;
+		return n;
 	}
 
 	/* (non-Javadoc)
@@ -62,7 +63,7 @@ public class MyTree<E> implements Tree<E> {
 	 */
 	@Override
 	public Position<E> parent(Position<E> child) {
-		
+
 		return null;
 	}
 
@@ -81,9 +82,26 @@ public class MyTree<E> implements Tree<E> {
 	 * @see examples.Tree#childrenPositions(examples.Position)
 	 */
 	@Override
-	public Iterator<Position<E>> childrenPositions(Position<E> parent) {
-		// TODO Auto-generated method stub
-		return null;
+	public Iterator<Position<E>> childrenPositions(Position<E> parent){
+		final TNode n = checkAndCast(parent);
+		return new Iterator<Position<E>>(){
+			Iterator<TNode> it = n.children.elements(); 
+			@Override
+			public boolean hasNext() {
+				return it.hasNext();
+			}
+
+			@Override
+			public Position<E> next() {
+				return it.next();
+			}
+
+			@Override
+			public void remove() {
+				it.remove();
+			}
+			
+		};
 	}
 
 	/* (non-Javadoc)
@@ -118,8 +136,13 @@ public class MyTree<E> implements Tree<E> {
 	 */
 	@Override
 	public Position<E> addChild(Position<E> parent, E o) {
-		// TODO Auto-generated method stub
-		return null;
+		TNode n = checkAndCast(parent);
+		TNode newN = new TNode();
+		newN.elem = o;
+		newN.parent = n;
+		Position<TNode> myPosition = n.children.insertLast(newN);
+		size++;
+		return newN;
 	}
 
 	/* (non-Javadoc)
@@ -181,8 +204,7 @@ public class MyTree<E> implements Tree<E> {
 	 */
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		return size;
 	}
 
 	/* (non-Javadoc)
@@ -195,11 +217,43 @@ public class MyTree<E> implements Tree<E> {
 	}
 
 	/**
+	 * 
+	 */
+	public void printPreOrder(){
+		printPreOrder(root,"");
+	}
+
+	/**
+	 * @param r
+	 */
+	private void printPreOrder(Position<E> r, String indent) {
+		if (r == null) return;
+		System.out.println(indent+r.element());
+		// now the recursive calls for all children nodes:
+		Iterator<Position<E>> it = childrenPositions(r);
+		while (it.hasNext()) printPreOrder(it.next(),indent+"..");
+	}
+
+
+
+	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+		MyTree<String> t = new MyTree<>();
+		Position<String> p = t.createRoot("Title");
+		Position<String> p1 = t.addChild(p, "Section 1");
+		Position<String> p2 = t.addChild(p, "Section 2");
+		Position<String> p1_1 = t.addChild(p1,"subsection 1.1");
+		Position<String> p1_2 = t.addChild(p1,"subsection 1.2");
+		Position<String> p2_1 = t.addChild(p2,"subsection 2.1");
+		Position<String> p2_2 = t.addChild(p2,"subsection 2.2");
+//		t.addSiblingAfter(p2_1,"subsection 2.1a");
+//		t.addSiblingAfter(p2_2,"subsection 2.2a");
+		t.printPreOrder();
+		//		System.out.println("external nodes: "+t.numberOfExternalNodes());
+		//		System.out.println("internal nodes: "+t.numberOfInternalNodes());
+		//		System.out.println("height: "+t.height());
 	}
 
 }
