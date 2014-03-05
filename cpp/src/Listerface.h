@@ -23,10 +23,10 @@ class Listerface
     virtual Position<T> * insertLast(T *o) = 0;
     virtual Position<T> * insertBefore(Position<T> *p, T *o) = 0;
     virtual Position<T> * insertAfter(Position<T> *p, T *o) = 0;
-    virtual void remove(Position<T> *p) = 0;
+    virtual T * remove(Position<T> *p) = 0;
     //virtual Iterator<Position<T>> positions() = 0;
     //virtual Iterator<T> elements() = 0;
-    virtual int size() = 0;
+    virtual int getSize() = 0;
     virtual bool isEmpty() = 0;
 };
 

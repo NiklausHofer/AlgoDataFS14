@@ -8,10 +8,16 @@ class Position
 
   protected:
     //Position();
+    virtual ~Position();
 
   public:
     virtual T * getElement() = 0;
 
 };
+
+template <typename T>
+Position<T>::~Position()
+{
+}
 
 #endif

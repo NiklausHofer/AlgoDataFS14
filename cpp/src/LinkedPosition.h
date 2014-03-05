@@ -24,6 +24,7 @@ class LinkedPosition : public Position<T>
     Listerface<T> * list;
     LinkedPosition();
     LinkedPosition( Listerface<T> * list );
+    ~LinkedPosition();
 
   public:
     T * getElement();
@@ -40,12 +41,23 @@ template <typename T>
 LinkedPosition<T>::LinkedPosition( Listerface<T> * list )
 {
   this->list = list;
+  next = NULL;
+  previous = NULL;
 }
 
 template <typename T>
 T * LinkedPosition<T>::getElement()
 {
   return element;
+}
+
+template <typename T>
+LinkedPosition<T>::~LinkedPosition()
+{
+  next = NULL;
+  previous = NULL;
+  list = NULL;
+  element = NULL;
 }
 
 #endif
