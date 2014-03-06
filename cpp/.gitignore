@@ -9,3 +9,13 @@ doc\
 *.jar
 *.swp
 .*.swp
+*~
+.*~
+Makefile.in
+autom4te.cache/
+depcomp
+install-sh
+missing
+test-driver
+config.h.in
+aclocal.m4

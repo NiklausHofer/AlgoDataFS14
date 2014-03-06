@@ -28,6 +28,8 @@ int main( int argc, const char* argv[] )
   std::cout << foo->isFirst( p ) << std::endl;
   std::cout << foo->isLast( p ) << std::endl;
 
+  //delete p;
+
   //foo->next( NULL );
 
   InvalidPosition<std::string> * pos = new InvalidPosition<std::string>();
