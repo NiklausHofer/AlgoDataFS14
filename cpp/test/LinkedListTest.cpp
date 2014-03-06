@@ -43,12 +43,12 @@ BOOST_AUTO_TEST_CASE( pass_wrong_position_test )
 
   string * str = new string( "foo bar" );
 
-  BOOST_CHECK_THROW( list->next( pos ), runtime_error );
-  BOOST_CHECK_THROW( list->previous( pos ), runtime_error );
-  BOOST_CHECK_THROW( list->replaceElement( pos, str ), runtime_error );
-  BOOST_CHECK_THROW( list->insertBefore( pos, str ), runtime_error );
-  BOOST_CHECK_THROW( list->insertAfter( pos, str ), runtime_error );
-  BOOST_CHECK_THROW( list->remove( pos ), runtime_error );
+  BOOST_CHECK_THROW( list->next( pos ), invalid_argument );
+  BOOST_CHECK_THROW( list->previous( pos ), invalid_argument );
+  BOOST_CHECK_THROW( list->replaceElement( pos, str ), invalid_argument );
+  BOOST_CHECK_THROW( list->insertBefore( pos, str ), invalid_argument );
+  BOOST_CHECK_THROW( list->insertAfter( pos, str ), invalid_argument );
+  BOOST_CHECK_THROW( list->remove( pos ), invalid_argument );
 }
 
 BOOST_AUTO_TEST_CASE( first_elem_to_empty_list_test )
@@ -287,6 +287,57 @@ BOOST_AUTO_TEST_CASE( insert_before_first_test )
   BOOST_CHECK_EQUAL( str, newFirst->getElement() );
 }
 
-// TODO
-// test replaceElement
-// test insertBefore and insertAfter in the middle
+BOOST_AUTO_TEST_CASE( insert_before_middle )
+{
+  LinkedList<string> * list = generateList();
+  string * str = new string( "I'll break your order" );
+
+  Position<string> * oldPos = list->next( list->first() );
+  Position<string> * beforePos = list->previous( oldPos );
+
+  BOOST_CHECK_EQUAL( 5, list->getSize() );
+
+  Position<string> * newPos = list->insertBefore( oldPos, str );
+
+  BOOST_CHECK_EQUAL( 6, list->getSize() );
+  BOOST_CHECK_EQUAL( str, newPos->getElement() );
+  BOOST_CHECK_EQUAL( oldPos, list->next( newPos ) );
+  BOOST_CHECK_EQUAL( beforePos, list->previous( newPos ) );
+  BOOST_CHECK_EQUAL( newPos, list->next( beforePos ) );
+  BOOST_CHECK_EQUAL( newPos, list->previous( oldPos ) );
+}
+
+BOOST_AUTO_TEST_CASE( insert_after_middle )
+{
+  LinkedList<string> * list = generateList();
+  string * str = new string( "I'll break your order" );
+
+  Position<string> * oldPos = list->next( list->first() );
+  Position<string> * afterPos = list->next( oldPos );
+
+  BOOST_CHECK_EQUAL( 5, list->getSize() );
+
+  Position<string> * newPos = list->insertAfter( oldPos, str );
+
+  BOOST_CHECK_EQUAL( 6, list->getSize() );
+  BOOST_CHECK_EQUAL( str, newPos->getElement() );
+  BOOST_CHECK_EQUAL( oldPos, list->previous( newPos ) );
+  BOOST_CHECK_EQUAL( afterPos, list->next( newPos ) );
+  BOOST_CHECK_EQUAL( newPos, list->next( oldPos ) );
+  BOOST_CHECK_EQUAL( newPos, list->previous( afterPos ) );
+}
+
+BOOST_AUTO_TEST_CASE( replace_element_test )
+{
+  LinkedList<string> * list = generateList();
+  string * str = new string( "Now I'm the 3th element!" );
+
+  Position<string> * pos = list->next( list->next( list->first() ) );
+
+  BOOST_CHECK_EQUAL( 5, list->getSize() );
+
+  string * oldStr = list->replaceElement( pos, str );
+
+  BOOST_CHECK_EQUAL( *( new string( "third element" ) ), *oldStr );
+  BOOST_CHECK_EQUAL( pos->getElement(), str );
+}

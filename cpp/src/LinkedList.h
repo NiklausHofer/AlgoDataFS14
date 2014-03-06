@@ -43,10 +43,10 @@ LinkedPosition<T> * LinkedList<T>::evaluate( Position<T> *p )
   LinkedPosition<T> * tmpPos = dynamic_cast<LinkedPosition<T>*>( p );
 
   if( tmpPos == NULL )
-    throw std::runtime_error( "Passed Position belongs to some other type of list!" );
+    throw std::invalid_argument( "Passed Position belongs to some other type of list!" );
 
   if( tmpPos->list == NULL )
-    throw std::runtime_error( "This Position is not a member of any list!" );
+    throw std::invalid_argument( "This Position is not a member of any list!" );
 
   if( tmpPos->list != this )
     throw std::runtime_error( "This Position belongs to another list of the same type" );
