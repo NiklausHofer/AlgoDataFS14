@@ -17,5 +17,5 @@ depcomp
 install-sh
 missing
 test-driver
-config.h.in
 aclocal.m4
+configure
