@@ -6,8 +6,7 @@ package examples;
 import java.util.Iterator;
 
 /**
- * Position based multi-way tree. Children are always 
- * reached via the iterator interface 
+ * Position based binary tree
  * @author ps
  *
  * @param <E> The type of the objects stored in this tree
