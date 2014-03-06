@@ -83,7 +83,7 @@ public class SortTest {
 		// now a[to..piv-1] <= a[piv] and 
 		// a[piv+1..to]>=a[piv]
 		qSort(a,from,piv-1);
-		qSort(a,piv+1,to);
+		qSort(a,piv,to);
 	}
 
 	/**
@@ -104,16 +104,14 @@ public class SortTest {
 	      swap(a,rand.nextInt(to-from)+from,med);
 	      int pivot = a[med];
 	      while (i <= j) {
-	            while (a[i] < pivot)
-	                  i++;
-	            while (a[j] > pivot)
-	                  j--;
+	            while (a[i] < pivot) i++;
+	            while (a[j] > pivot)j--;
 	            if (i <= j) {
 	            	swap(a,i,j);
-	                  i++;
-	                  j--;
+	                i++;
+	                j--;
 	            }
-	      };
+	      }
 	      return i;
 	}	
 	
