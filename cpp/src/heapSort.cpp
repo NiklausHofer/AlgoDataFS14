@@ -73,7 +73,7 @@ void heapUp( long size, int a[], int pos )
 
   int parent = ((pos-1)/2);
 
-  while ( a[pos] > a[parent] )
+  while ( pos > 0 && a[pos] > a[parent] )
   {
     swap( size, a, pos, parent );
     pos = parent;
@@ -93,11 +93,8 @@ void heapDown( long size, int a[], int pos, int len )
 
   do
   {
-    if( a[biggerChildPos] > a[pos] )
-    {
-      swap( size, a, biggerChildPos, pos );
-      pos = biggerChildPos;
-    }
+    swap( size, a, biggerChildPos, pos );
+    pos = biggerChildPos;
 
     leftChild = ((pos*2)+1);
     rightChild = ((pos*2)+2);
