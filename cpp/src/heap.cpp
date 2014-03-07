@@ -48,7 +48,7 @@ void swap( long size, int a[], int i, int k )
   //cnt++;
 }
 
-void printArray( long size, int a[] )
+void verbosePrintArray( long size, int a[] )
 {
   // You can find the position of you number on the command line
   // like this (number 42 in the example):
@@ -57,11 +57,13 @@ void printArray( long size, int a[] )
     cout << "[" << i << "]:\t" << a[i] << endl;
 }
 
-void hPrintArray( long size, int a[] )
+void printArray( long size, int a[] )
 {
+  // You can find the position of you number on the command line
+  // like this (number 42 in the example):
+  //  ./binarysearch | nl -v 0 - | grep -P '\s*[0-9]+\s+42$' | cut -f 1
   for( int i = 0; i< size; i++ )
-    cout << a[i] << "; ";
-  cout << endl;
+    cout << a[i] << endl;
 }
 
 void heapUp( long size, int a[], int pos )
@@ -109,20 +111,27 @@ void heapDown( long size, int a[], int pos, int len )
 
 }
 
-void heapSort( long size, int a[] )
+void heapSort( long size, int a[], int verbosity = 0 )
 {
   for( int i = 1; i < size; i++ )
     heapUp( size, a, i );
 
-  //printArray( size, a );
-  cout << "==============" << endl;
+  if( verbosity == 2 )
+    printArray( size, a );
+  else if( verbosity >= 3 )
+    verbosePrintArray( size, a );
 
-  if( maxHeapCheck( size, a ) )
-    cout << "Sort successful! \n" << endl;
-  else
-    cout << "Sort UNSUCCESSFUL! \n" << endl;
+  if( verbosity >= 1 )
+  {
+    cout << "==============" << endl;
 
-  cout << "==============" << endl;
+    if( maxHeapCheck( size, a ) )
+      cout << "Sort successful!" << endl;
+    else
+      cout << "Sort UNSUCCESSFUL!" << endl;
+
+    cout << "==============" << endl;
+  }
 
   for( int i = size-1; i > 0; i-- )
   {
@@ -130,14 +139,21 @@ void heapSort( long size, int a[] )
     heapDown( size, a,0,i );
   }
 
-  cout << "==============" << endl;
+  // Some code for recursion. But that doesn't work (yet)
+  //for( int i = size/2; i>=0; i-- )
+  //  heapDown( size, a, i, size);
 
-  if( heapCheck( size, a ) )
-    cout << "Sort successful! \n" << endl;
-  else
-    cout << "Sort UNSUCCESSFUL! \n" << endl;
+  if( verbosity >= 1 )
+  {
+    cout << "==============" << endl;
 
-  cout << "==============" << endl;
+    if( heapCheck( size, a ) )
+      cout << "'Reversion' successful!" << endl;
+    else
+      cout << "'Reversion' UNSUCCESSFUL!" << endl;
+
+    cout << "==============" << endl;
+  }
 }
 
 
@@ -146,17 +162,14 @@ int main( int ac, char* av[] )
   long size;
   long seed;
   string algorithm;
-  bool verbose = false;
-  int searchedValue;
-  //int verbosity;
+  //int searchedValue;
+  int verbosity;
 
   po::options_description clio("Command line options");
   clio.add_options()
     ("help,h", "Print help message")
-    ("verbose,v", "Run in verbose mode")
-    //("verbose,v", po::value<int>(&verbosity)->default_value(0), "Set the level of verbosity")
+    ("verbose,v", po::value<int>(&verbosity)->default_value(0), "Set the level of verbosity")
     ("array-size", po::value<long>(&size)->default_value(1000), "Size of the array")
-    //("algorithm,a", po::value<string>(&algorithm)->default_value("quicksort"), "Chose the algoirthm for sorting")
     ("seed,s", po::value<long>(&seed)->default_value(0), "Chose a seed for the SRNG")
     //("insecure", "Do not check if the array was sorted correcly")
     //("searched-value", po::value<int>(&searchedValue)->default_value(-1), "Value we're looking for in the array")
@@ -172,25 +185,28 @@ int main( int ac, char* av[] )
     return 0;
   }
 
-  verbose = vm.count("verbose");
-  if( verbose )
+  if( verbosity == 1 )
     cout << "running in verbose mode" << endl;
+  else if( verbosity == 2 )
+    cout << "running in more verbose mode" << endl;
+  else if( verbosity >= 3 )
+    cout << "running in super verbose mode" << endl;
 
   if( seed == 0 )
   {
     time_t timeObj = time( NULL );
     seed = time( &timeObj );
-    if( verbose )
+    if( verbosity >= 1 )
       cout << "Seed, retrieved from current time: " << seed << endl;
   }
   else
   {
-    if(  verbose )
+    if( verbosity >= 1 )
       cout << "seed has been defined by the user to be: " << seed << endl;
   }
   srand( seed );
 
-  if( verbose )
+  if( verbosity >= 1 )
     cout << "The size of the array will be: " << size << endl;
 
   int a [size];
@@ -199,54 +215,12 @@ int main( int ac, char* av[] )
   for( int i =0; i<size; i++ )
     a[i] = rand() % size + 1;
 
-  heapSort( size, a );
+  heapSort( size, a, verbosity );
 
-  if( verbose )
+  if( verbosity == 2 )
     printArray( size, a );
-
-  /*
-  if( algorithm == "quicksort" )
-    quicksort(size, a);
-  else if ( algorithm == "bubblesort" )
-    bubbleSort(size, a);
-  else 
-  {
-    cerr << "Sorry, unknown sorting algorithm \"" << algorithm << "\"" << endl;
-    return 1;
-  }
-
-  if( verbose )
-    cout << "Algorithm used for sorting: " << algorithm << endl;
-
-  if( verbose )
-    printArray( size, a );
-
-  if(! vm.count("insecure") )
-  {
-    if( ! sortCheck( size, a ) )
-    {
-      cout << "WARNING: Array was not sorted correctly! Aborting now!" << endl;
-      return 1;
-    }
-    else
-      cout << "The array has been sorted correctly." << endl;
-  }
-  else if( verbose )
-    cout << "WARNING: Not checking if the array was sorted correctly!" << endl;
-
-  if( searchedValue >= 0 )
-  {
-    if( verbose )
-      cout << "Looking for the value " << searchedValue << endl;
-
-    cout << find( size, a, 42 ) << endl;
-  }
-  else
-  {
-    if( verbose )
-      cout << "Not looking for any value" << endl;
-  }
-  */
+  else if( verbosity >= 3 )
+    verbosePrintArray( size, a );
 
   return 0;
 }
