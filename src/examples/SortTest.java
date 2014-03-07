@@ -136,9 +136,93 @@ public class SortTest {
 		return ret;
 	}
 	
+	public static void heapSort(int [] a){
+		cnt=0;
+		int len = a.length;
+		// make 'a' a max-heap:
+//		for (int i=1; i<len; i++){
+//			upHeap(a,i);
+//		}
+		for (int i=len/2; i>=0; i--){
+			downHeap(a,i,len);
+		}
+//		System.out.println(heapCheck(a));
+
+		// now we swap the max element 
+		// which is at position 0 with the end 
+		// of the heap and make the heap smaller by one
+		for (int i=len-1; i > 0; i--){
+			if (a[0]!=a[i]){
+				swap(a,0,i);
+				// now we have to restore the heap property:
+				downHeap(a, 0, i);
+			}
+		}
+			
+	}
+	
+
+	
+	/**
+	 * @param a
+	 * @param i
+	 * @param i2
+	 */
+	private static void downHeap(int[] a, int pos, int len) {
+		// starting with element i we compare it with the
+		// children and swap with the bigger if necessary
+		// and so on until the child position is bigger than 
+		// the current lenghth of the heap
+		int left = 2*pos+1;
+		int right = left+1;
+		while (left < len){
+			int biggerChildPos = left;
+			// if we have also a right child
+			// it may be the bigger one
+			if (right < len && a[right] > a[left]){
+				biggerChildPos = right;
+			}
+			// do we have to swap?
+			if (a[pos] < a[biggerChildPos]){
+				swap(a,pos,biggerChildPos);
+				pos = biggerChildPos;
+				left = 2*pos+1;
+				right = left+1;
+			}
+			// nothing to swap so we return
+			else return;
+		}
+		
+	}
+
+
+	/**
+	 * @param a
+	 * @param i
+	 */
+	private static void upHeap(int[] a, int pos) {
+		// swaps the element at i with its parent if
+		// necessary (and so on) 
+		// ...
+		int parent = (pos-1)/2;
+		while (pos > 0 && a[parent] < a[pos]){
+			swap(a,pos,parent);
+			pos=parent;
+			parent = (pos-1)/2;
+		}
+
+	}
+	
+	public static boolean heapCheck(int [] a){
+		for (int i=1;i<a.length;i++) {
+			if (a[(i-1)/2] < a[i]) return false;
+		}
+		return true;
+	}
+
 	public static void main(String[] args) {
 		long t1=0,t2=0,te1=0,te2=0,eTime=0,time=0;
-		int n = 20000000;
+		int n = 10000000;
 		// we need a random generator
 		Random rand=new Random();
 		//rand.setSeed(54326346); // initialize always in the same state
@@ -151,7 +235,7 @@ public class SortTest {
 		// get Time
 		te1=System.currentTimeMillis();
 		t1 = threadBean.getCurrentThreadCpuTime();
-		quickSort(a);
+		heapSort(a);
 		te2 = System.currentTimeMillis();
 		t2 = threadBean.getCurrentThreadCpuTime();
 		time=t2-t1;
@@ -159,7 +243,7 @@ public class SortTest {
 		System.out.println("CPU-Time usage: "+time/1000000.0+" ms");
 		System.out.println("elapsed time: "+eTime+" ms");
 		System.out.println("sorted? "+sortCheck(a));
-		System.out.println("swap operation needed "+cnt);
+		System.out.println("swap operation needed: "+cnt);
         // find
 //		te1=System.currentTimeMillis();
 //		t1 = threadBean.getCurrentThreadCpuTime();
