@@ -173,25 +173,7 @@ public class SortTest {
 		// children and swap with the bigger if necessary
 		// and so on until the child position is bigger than 
 		// the current lenghth of the heap
-		int left = 2*pos+1;
-		int right = left+1;
-		while (left < len){
-			int biggerChildPos = left;
-			// if we have also a right child
-			// it may be the bigger one
-			if (right < len && a[right] > a[left]){
-				biggerChildPos = right;
-			}
-			// do we have to swap?
-			if (a[pos] < a[biggerChildPos]){
-				swap(a,pos,biggerChildPos);
-				pos = biggerChildPos;
-				left = 2*pos+1;
-				right = left+1;
-			}
-			// nothing to swap so we return
-			else return;
-		}
+		//....
 		
 	}
 
@@ -204,12 +186,6 @@ public class SortTest {
 		// swaps the element at i with its parent if
 		// necessary (and so on) 
 		// ...
-		int parent = (pos-1)/2;
-		while (pos > 0 && a[parent] < a[pos]){
-			swap(a,pos,parent);
-			pos=parent;
-			parent = (pos-1)/2;
-		}
 
 	}
 	
