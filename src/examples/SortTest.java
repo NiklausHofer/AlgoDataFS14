@@ -140,12 +140,12 @@ public class SortTest {
 		cnt=0;
 		int len = a.length;
 		// make 'a' a max-heap:
-//		for (int i=1; i<len; i++){
-//			upHeap(a,i);
-//		}
-		for (int i=len/2; i>=0; i--){
-			downHeap(a,i,len);
+		for (int i=1; i<len; i++){
+			upHeap(a,i);
 		}
+//		for (int i=len/2; i>=0; i--){
+//			downHeap(a,i,len);
+//		}
 //		System.out.println(heapCheck(a));
 
 		// now we swap the max element 
