@@ -5,7 +5,7 @@ package examples;
  */
 /**
  * A Locator based priority queue which alows to store key - element 
- * pairs and allows for O(1) removal and for key replacement
+ * pairs and allows for O(log n) removal and for key replacement
  * @author ps
  *
  * @param <K> The type of the key (has to extend a comparable class) 

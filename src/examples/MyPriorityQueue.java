@@ -41,7 +41,7 @@ public class MyPriorityQueue<K extends Comparable<? super K>, E> implements
 	
 	
 	private PQLocator<K,E>[] locs = (PQLocator<K,E>[]) new PQLocator[256]; 
-	private int size=1;
+	private int size=1; // we start at 1 because the navigation is simpler
 	
 	/* (non-Javadoc)
 	 * @see examples.PriorityQueue#showMin()
@@ -87,17 +87,33 @@ public class MyPriorityQueue<K extends Comparable<? super K>, E> implements
 	}
 
 	/**
-	 * @param i
+	 * @param pos 
 	 */
 	private void upHeap(int i) {
-		//........
+		while (i>1 && locs[i/2].key.compareTo(locs[i].key)>0){
+			swap(i,i/2);
+			i=i/2;
+		}
 	}
 
 	/**
 	 * @param i
 	 */
 	private void downHeap(int i) {
-		//.......
+		int left = i*2;
+		int right = left+1;
+		int smaller;
+		while (left < size){
+			smaller = left;
+			if (right < size && locs[left].key.compareTo(locs[right].key)>0) {
+				smaller = right;
+			}
+			if (locs[i].key.compareTo(locs[smaller].key) <= 0 ) return;
+			swap(i,smaller);
+			i=smaller;
+			left=i*2;
+			right=left+1;
+		}
 	}
 	
 
@@ -164,11 +180,11 @@ public class MyPriorityQueue<K extends Comparable<? super K>, E> implements
 		return true;
 	}
 	static public void main(String[] argv){
-		int N=100;
+		int N=10000;
 		MyPriorityQueue<Double,String> pq = new MyPriorityQueue<>();
 		Locator<Double,String>[] locs = new Locator[N];
 		Random ra = new Random(63465);
-		for(int i=0;i<N/2;i++) locs[i]=pq.insert(Double.POSITIVE_INFINITY,null);
+		for(int i=0;i<N/2;i++) locs[i]=pq.insert(ra.nextDouble(),null);
 		for(int i=0;i<N/2;i++) locs[i+N/2]=pq.insert(ra.nextDouble(),null);
 		for(int i=0;i<N/2;i++) pq.removeMin();
 		System.out.println(pq.isHeap());
