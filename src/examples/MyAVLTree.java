@@ -60,7 +60,7 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 	}
 	
 	// istance variables:
-	private AVLNode root;
+	private AVLNode root = new AVLNode();
 	private int size;
 	
 	
