@@ -152,11 +152,9 @@ public class SortTest {
 		// which is at position 0 with the end 
 		// of the heap and make the heap smaller by one
 		for (int i=len-1; i > 0; i--){
-			if (a[0]!=a[i]){
-				swap(a,0,i);
-				// now we have to restore the heap property:
-				downHeap(a, 0, i);
-			}
+			swap(a,0,i);
+			// now we have to restore the heap property:
+			downHeap(a, 0, i);
 		}
 			
 	}
@@ -169,30 +167,24 @@ public class SortTest {
 	 * @param i2
 	 */
 	private static void downHeap(int[] a, int pos, int len) {
-		// starting with element i we compare it with the
+		// starting with element at 'pos' we compare it with the
 		// children and swap with the bigger if necessary
 		// and so on until the child position is bigger than 
 		// the current lenghth of the heap
-		int left = 2*pos+1;
-		int right = left+1;
+		int left = pos*2+1;
 		while (left < len){
-			int biggerChildPos = left;
-			// if we have also a right child
-			// it may be the bigger one
-			if (right < len && a[right] > a[left]){
-				biggerChildPos = right;
+			int biggerPos = left; // maybe this will change..
+			int right = left + 1;
+			if (right < len && a[right]>a[left]) {
+				biggerPos = right; 
 			}
-			// do we have to swap?
-			if (a[pos] < a[biggerChildPos]){
-				swap(a,pos,biggerChildPos);
-				pos = biggerChildPos;
-				left = 2*pos+1;
-				right = left+1;
-			}
-			// nothing to swap so we return
-			else return;
+			// finished?
+			if (a[pos] >= a[biggerPos]) return;
+			// no
+			swap(a,pos,biggerPos);
+			pos = biggerPos;
+			left =pos*2+1; 
 		}
-		
 	}
 
 
@@ -202,15 +194,14 @@ public class SortTest {
 	 */
 	private static void upHeap(int[] a, int pos) {
 		// swaps the element at i with its parent if
-		// necessary (and so on) 
-		// ...
-		int parent = (pos-1)/2;
-		while (pos > 0 && a[parent] < a[pos]){
-			swap(a,pos,parent);
-			pos=parent;
+		// necessary (and so on)
+		int parent = (pos-1)/2; 
+		while (pos > 0 && a[parent]< a[pos]){
+			// we have a parent (which is smaller) 
+			swap(a,parent,pos);
+			pos = parent;
 			parent = (pos-1)/2;
 		}
-
 	}
 	
 	public static boolean heapCheck(int [] a){
