@@ -18,6 +18,7 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 		Object owner = MyAVLTree.this;
 		E elem;
 		K key;
+		int height;
 
 		/* (non-Javadoc)
 		 * @see examples.Position#element()
@@ -40,13 +41,11 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 		}
 		
 		boolean isLeftChild(){
-			if (parent==null) return false;
-			return parent.left==this;
+			return parent != null && parent.left==this;
 		}
 		
-		boolean isrightChild(){
-			if (parent==null) return false;
-			return parent.right==this;
+		boolean isRightChild(){
+			return parent != null && parent.right==this;
 		}
 		
 		void expand(K key,E elem){
@@ -72,14 +71,9 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 	 */
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		return size;
 	}
 
-	/* (non-Javadoc)
-	 * @see examples.OrderedDictionary#find(java.lang.Comparable)
-	 */
-	@Override
 	public Locator<K, E> find(K key) {
 		// TODO Auto-generated method stub
 		return null;
@@ -99,8 +93,15 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 	 */
 	@Override
 	public Locator<K, E> insert(K key, E o) {
-		// TODO Auto-generated method stub
-		return null;
+		AVLNode n = root;
+		while ( ! n.isExternal()){
+			int comp = key.compareTo(n.key);
+			if (comp < 0) n=n.left;
+			else n=n.right;
+		}
+		n.expand(key, o);
+		size++;
+		return n;
 	}
 
 	/* (non-Javadoc)
@@ -173,6 +174,36 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 	public Iterator<Locator<K, E>> sortedLocators() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public void print(){
+		print(root,"");
+	}
+	
+	/**
+	 * @param root2
+	 * @param string
+	 */
+	private void print(AVLNode r, String ind) {
+		if (r.isExternal()) return;
+		print(r.right,ind+"..");
+		System.out.println(ind+r.key);
+		print(r.left,ind+"..");
+	}
+
+	
+	
+	public static void main(String[] argv){
+		MyAVLTree<Integer,String> t = new MyAVLTree<>();
+		t.insert(10,null);
+		t.insert(5,null);
+		t.insert(20,null);
+		t.insert(30,null);
+		t.insert(15,null);
+		t.insert(25,null);
+		t.insert(7,null);
+		System.out.println("tree:");
+		t.print();
 	}
 
 }
