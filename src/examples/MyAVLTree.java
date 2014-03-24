@@ -129,6 +129,7 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 		}
 		n.expand(key, o);
 		size++;
+		adjustHeightAboveAndRebalance(n);
 		return n;
 	}
 
@@ -138,31 +139,167 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 	@Override
 	public void remove(Locator<K, E> loc) {
 		AVLNode n = checkAndCast(loc);
+		AVLNode w;
 		if (n.left.isExternal() || n.right.isExternal()){
-			removeAboveExternal(n);
+			w = removeAboveExternal(n);
 		}
+		else {
 		// find the most right node in the left subtree
-		AVLNode p = n.left;
-		while (! p.right.isExternal()) p=p.right;
-		removeAboveExternal(p);
-		// now we replace n by p
-		p.parent = n.parent;
-		p.right = n.right;
-		p.left = n.left;
-		if (n.isLeftChild()) n.parent.left=p;
-		else if (n.isRightChild()) n.parent.right=p;
-		else root = p;
-		p.left.parent = p;
-		p.right.parent = p;
-		p.height = n.height;
+			AVLNode p = n.left;
+			while (! p.right.isExternal()) p=p.right;
+			w = removeAboveExternal(p);
+			// now we replace n by p
+			p.parent = n.parent;
+			p.right = n.right;
+			p.left = n.left;
+			if (n.isLeftChild()) n.parent.left=p;
+			else if (n.isRightChild()) n.parent.right=p;
+			else root = p;
+			p.left.parent = p;
+			p.right.parent = p;
+			p.height = n.height;
+		}
+		adjustHeightAboveAndRebalance(w);
 		n.owner = null;
 		size--;	
 	}
 
+	private void adjustHeightAboveAndRebalance(AVLNode n){
+		// corrrect the height of all ancesters
+		n = n.parent;
+		while(n!=null){
+			int newHeight = Math.max(n.left.height,n.right.height)+1;
+			boolean balanced = Math.abs(n.left.height-n.right.height) < 2;
+			if (n.height == newHeight && balanced) break;
+			n.height = newHeight;
+			if ( ! balanced) n=restructure(n);
+			n=n.parent;
+		}
+	}
+
+	private AVLNode restructure(AVLNode n) {
+		// cnt++;
+		// n is unbalanced
+		// returns the node that takes the position of n
+		AVLNode p=n.parent,z=n,x=null,y=null,
+		a=null,b=null,c=null, t1=null,t2=null;
+		if (z.left.height > z.right.height){
+			//   z
+			//  /
+			// y
+			c=z;
+			y=z.left;
+			if (y.left.height >=y.right.height){
+				// in case we have two equal branches
+				// concidering the length we take alway s the single
+				// rotation
+				//     z
+				//    /
+				//   y
+				//  /
+				// x
+				x=y.left;
+				t1=x.right;
+				t2=y.right;
+				b=y;
+				a=x;
+			}
+			else {
+				//     z
+				//    /
+				//   y
+				//   \  
+				//    x
+				x=y.right;
+				t1=x.left;
+				t2=x.right;
+				a=y;
+				b=x;
+			}
+		}
+		else{
+			// z
+			//   \
+			//    y
+			a=z;
+			y=z.right;
+			if (y.right.height >= y.left.height){
+				//  z
+				//   \
+				//    y
+				//     \  
+				//      x
+				x=y.right;
+				b=y;
+				c=x;
+				t1=y.left;
+				t2=x.left;
+			}
+			else {
+				//  z
+				//   \
+				//    y
+				//    /  
+				//   x
+				x=y.left;
+				b=x;
+				c=y;
+				t1=x.left;
+				t2=x.right;
+			}
+		}		
+		// umhaengen
+		b.parent = p;
+		if (p != null){
+			if (p.left == z) {
+				p.left=b;
+			}
+			else p.right=b;
+		}
+		else {
+			root=b;
+		}
+		b.right = c;
+		b.left = a;
+		// und umgekehrt
+		a.parent = b;
+		c.parent = b;
+
+		// subtrees:
+		a.right = t1;
+		t1.parent = a;
+		c.left = t2;
+		t2.parent = c;
+		
+		
+		a.height = Math.max(a.left.height, a.right.height)+1;
+		c.height = Math.max(c.left.height, c.right.height)+1;
+		// now we can calculate the height of b
+		b.height = Math.max(b.left.height, b.right.height)+1;
+		return b;
+	}
+
 	/**
 	 * @param n
+	 * @return 
 	 */
-	private void removeAboveExternal(AVLNode n) {
+	private AVLNode removeAboveExternal(AVLNode n) {
+		AVLNode r; // takes the position of n
+		if (n.left.isExternal()){
+			r = n.right;
+			r.parent = n.parent;
+			if (n.isLeftChild()) r.parent.left = r;
+			else if (n.isRightChild()) r.parent.right = r;
+			else root=r; // n was the root node!
+		}
+		else {
+			r = n.left;
+			r.parent = n.parent;
+			if (n.isLeftChild()) r.parent.left = r;
+			else if (n.isRightChild()) r.parent.right = r;
+			else root=r;		
+		}
+		return r;
 		
 	}
 
@@ -262,7 +399,7 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 		else inN = in+"-"; // root of the tree
 		if ( ! r.right.isExternal()) System.out.println(inNeu+" |");
 		else System.out.println(inNeu);
-		System.out.println(inN+r.key()+":"+r.elem); //+"("+r.height+")"); 
+		System.out.println(inN+r.key()+":"+r.elem+"("+r.height+")"); 
 		// left subtree
 		inNeu = in;
 		if (r.isLeftChild()){
@@ -277,18 +414,19 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 	
 	public static void main(String[] argv){
 		MyAVLTree<Integer,String> t = new MyAVLTree<>();
-		t.insert(10,"");
+		Locator<Integer,String> loc  = t.insert(10,"");
 		t.insert(5,"");
 		t.insert(20,"occ_1");
 		t.insert(30,"");
 		t.insert(25,"");
 		t.insert(20,"occ_2");
 		t.insert(7,"");
+		t.insert(6,"");
 		System.out.println("tree:");
 		t.print();
-		System.out.println();
-		Locator<Integer,String> loc = t.find(20);
-		System.out.println("found: "+loc.key()+":"+loc.element());
+		System.out.println("after del:");
+		t.remove(loc);
+		t.print();
 	}
 
 }
