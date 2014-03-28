@@ -4,6 +4,7 @@
 package examples;
 
 import java.util.Iterator;
+import java.util.Random;
 
 import examples.MyTree.TNode;
 
@@ -413,20 +414,31 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 	
 	
 	public static void main(String[] argv){
-		MyAVLTree<Integer,String> t = new MyAVLTree<>();
-		Locator<Integer,String> loc  = t.insert(10,"");
-		t.insert(5,"");
-		t.insert(20,"occ_1");
-		t.insert(30,"");
-		t.insert(25,"");
-		t.insert(20,"occ_2");
-		t.insert(7,"");
-		t.insert(6,"");
-		System.out.println("tree:");
-		t.print();
-		System.out.println("after del:");
-		t.remove(loc);
-		t.print();
+		MyAVLTree<Integer, String> t = new MyAVLTree<>();
+		Random rand = new Random(3434534);
+		int n  = 1000000;
+		Locator<Integer,String>[] locs = new Locator[n];
+		long time1 = System.currentTimeMillis();
+		for (int i=0;i<n;i++) {
+			locs[i]=t.insert(rand.nextInt(3*n),""+i);
+			//locs[i]=t.insert(i, "bla");
+		}
+		System.out.println(t.closestAfter(1));
+		for (int i=0;i<n/2;i++) {
+			t.remove(t.find(locs[i].key()));
+		}
+//		Locator<Integer,String> [] found = t.findAll(16); 
+//		for (Locator f:found) System.out.println(f.element());
+//		System.out.println(found);
+//		
+//		for (int i=0;i<n;i++) {
+//			Locator<Integer,String> loc = t.find(locs[i].key());
+//			System.out.println(loc.key()+":"+loc.element());
+//		}
+		long time2 = System.currentTimeMillis();
+		System.out.println("elapsed time: "+(time2-time1)/1000.0);
+//		t.print();
+//		t.check();
 	}
 
 }
