@@ -33,8 +33,8 @@ public class MySkipList<K extends Comparable<? super K>, E> implements
 		 * @param o
 		 */
 		public SLNode(K aKey, E o) {
-			if (aKey.compareTo(minKey)<=0) throw new RuntimeException(aKey+ " must be greater than "+minKey);
-			if (aKey.compareTo(maxKey)>=0) throw new RuntimeException(aKey+ " must be smaller than "+maxKey);
+			if (aKey.compareTo(minKey)<0) throw new RuntimeException(aKey+ " must be greater than "+minKey);
+			if (aKey.compareTo(maxKey)>0) throw new RuntimeException(aKey+ " must be smaller than "+maxKey);
 			key = aKey;
 			elem = o;
 		}
@@ -145,14 +145,41 @@ public class MySkipList<K extends Comparable<? super K>, E> implements
 	 * @see examples.OrderedDictionary#insert(java.lang.Comparable, java.lang.Object)
 	 */
 	@Override
-	public Locator<K, E> insert(K key, E o) {		
+	public Locator<K, E> insert(K key, E o) {
+		if (key.compareTo(minKey)<=0) throw new RuntimeException("key not bigger than minKey!");
+		if (key.compareTo(maxKey)>=0) throw new RuntimeException("key not smaller than maxKey!");
 		SLNode n = search(key);
-		// if we get a node with same key we schould move to
-		// the right most position with this key
-		while (n.right.key.compareTo(key)==0) n=n.right; 
-		SLNode newN = new SLNode(key,o,n,null); 
-		return newN;
+		// we take the rightmost Locator with valid key
+		while (n.right.key.compareTo(key)== 0) n=n.right;		
+		// now we want to insert a node at the nition n.right:
+		SLNode nNew = new SLNode(key,o,n,null);
+		SLNode pb = nNew;
+		boolean generateIndexNode = rand.nextDouble()<0.5;
+		while (generateIndexNode){
+			// System.out.println("index generated");
+			while (n.above==null) n = n.left;
+			n = n.above;
+			// create a new index
+			SLNode index = new SLNode(key,o,n,pb);
+			pb=index;
+			
+			// if n is topLeft we have to expand by one index level
+			if (n == topLeft) expand();
+			generateIndexNode = rand.nextDouble() < 0.5;
+		}
+		size++;
+		return nNew;
 	}
+
+	/**
+	 * 
+	 */
+	private void expand() {
+		topLeft = new SLNode (minKey,null,null,topLeft);
+		topRight = new SLNode (maxKey,null,topLeft,topRight);
+		height++;
+	}
+
 
 	/* (non-Javadoc)
 	 * @see examples.OrderedDictionary#remove(examples.Locator)
@@ -227,11 +254,28 @@ public class MySkipList<K extends Comparable<? super K>, E> implements
 	}
 	
 	public void print(){
-		SLNode n = bottomLeft.right;
-		while (n!=bottomRight) {
-			System.out.println(n.key+" : "+n.elem);
+		System.out.println("-------start------");
+		SLNode n = bottomLeft;
+		n=n.right;
+		StringBuffer lev = new StringBuffer();
+		while (n!=bottomRight){
+			lev.delete(0,lev.length());
+			SLNode m = n;
+			int index = 0;
+			while (m.above != null) {
+				index++;
+				m=m.above;
+				lev.append("+");
+			}
+			while(index<height-2){
+				index++;
+				lev.append("|");
+			}
+			System.out.println(String.format("%11d", n.key())+lev.toString()+"    elem: "+n.elem);
 			n=n.right;
 		}
+		System.out.println("--------end-------");
+		
 	}
 
 	/**
@@ -239,10 +283,10 @@ public class MySkipList<K extends Comparable<? super K>, E> implements
 	 */
 	public static void main(String[] args) {
 		MySkipList<Integer,String> sl = new MySkipList<>(-1,100);
-		sl.insert(23, "1");
-		sl.insert(13, "2");
-		sl.insert(33, "1");
+		Random rand = new Random();
+		for (int i=1;i<200;i++) sl.insert(rand.nextInt(100),""+i);
 		sl.print();
+		System.out.println(sl.height);
 	}
 
 }
