@@ -4,6 +4,7 @@
 package examples;
 
 import java.util.Iterator;
+import java.util.Random;
 
 /**
  * @author ps
@@ -80,6 +81,7 @@ public class MySkipList<K extends Comparable<? super K>, E> implements
 	private SLNode topLeft,topRight,bottomLeft,bottomRight;
 	private int size;
 	private int height;
+	private Random rand = new Random(5345);
 	
 	private K minKey, maxKey;
 	
@@ -116,6 +118,8 @@ public class MySkipList<K extends Comparable<? super K>, E> implements
 	@Override
 	public Locator<K, E> find(K key) {
 		SLNode n = search(key);
+		// find the leftmost occurence of this key
+		if (n.left!= null && n.left.key.compareTo(key)== 0) n=n.left;
 		return n;
 	}
 
@@ -143,6 +147,9 @@ public class MySkipList<K extends Comparable<? super K>, E> implements
 	@Override
 	public Locator<K, E> insert(K key, E o) {		
 		SLNode n = search(key);
+		// if we get a node with same key we schould move to
+		// the right most position with this key
+		while (n.right.key.compareTo(key)==0) n=n.right; 
 		SLNode newN = new SLNode(key,o,n,null); 
 		return newN;
 	}
