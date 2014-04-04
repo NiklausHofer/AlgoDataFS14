@@ -3,6 +3,7 @@
  */
 package examples;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 
@@ -99,7 +100,7 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 		while (! n.isExternal()){
 			int comp = key.compareTo(n.key);
 			if (comp==0){
-				ret = n;
+				ret = n; // we found it but we want the leftmost
 				n = n.left;
 			}
 			else if(comp<0) n = n.left;
@@ -113,9 +114,31 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 	 */
 	@Override
 	public Locator<K, E>[] findAll(K key) {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<Locator<K,E>> al = new ArrayList<>();
+		findAll(key,root,al);
+		return al.toArray(new Locator[0]);	
 	}
+
+	/**
+	 * @param root2
+	 * @param al
+	 */
+	private void findAll(K key,AVLNode n, ArrayList<Locator<K, E>> al) {
+		if (n.isExternal()) return;
+		int comp = key.compareTo(n.key);
+		if (comp==0){
+			findAll(key,n.left,al);
+			al.add(n);
+			findAll(key,n.right,al);
+		}
+		else if(comp<0) 
+			findAll(key,n.left,al);
+		else findAll(key,n.right,al);;	
+	}
+
+
+
+
 
 	/* (non-Javadoc)
 	 * @see examples.OrderedDictionary#insert(java.lang.Comparable, java.lang.Object)
@@ -306,8 +329,6 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 
 
 
-
-
 	/* (non-Javadoc)
 	 * @see examples.OrderedDictionary#closestBefore(java.lang.Comparable)
 	 */
@@ -331,9 +352,37 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 	 */
 	@Override
 	public Locator<K, E> next(Locator<K, E> loc) {
-		// TODO Auto-generated method stub
-		return null;
+		AVLNode n = checkAndCast(loc);
+		if (! n.right.isExternal()){
+			n=n.right;
+			while (! n.isExternal()) n=n.left; // finally we end at a external!
+		}
+		else {
+			while (n.isRightChild()) n=n.parent;
+		}
+		return n.parent;
+
 	}
+	
+	
+	private AVLNode findMin(AVLNode n){
+		// returns the leftmost internal 
+		// node of the subtree originating at n
+		while(! n.isExternal()){
+			n=n.left;
+		}
+		return n.parent;		
+	}
+
+	private AVLNode findMax(AVLNode n){
+		// returns the leftmost internal 
+		// node of the subtree originating at n
+		while(! n.isExternal()){
+			n=n.right;
+		}
+		return n.parent;		
+	}
+
 
 	/* (non-Javadoc)
 	 * @see examples.OrderedDictionary#previous(examples.Locator)
@@ -349,8 +398,7 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 	 */
 	@Override
 	public Locator<K, E> min() {
-		// TODO Auto-generated method stub
-		return null;
+		return findMin(root);
 	}
 
 	/* (non-Javadoc)
@@ -358,8 +406,7 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 	 */
 	@Override
 	public Locator<K, E> max() {
-		// TODO Auto-generated method stub
-		return null;
+		return findMax(root);
 	}
 
 	/* (non-Javadoc)
@@ -367,8 +414,30 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 	 */
 	@Override
 	public Iterator<Locator<K, E>> sortedLocators() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Iterator<Locator<K,E>>(){
+			AVLNode cur = findMin(root); 
+			@Override
+			public boolean hasNext() {
+				return cur != null;
+			}
+
+			@Override
+			public Locator<K, E> next() {
+				AVLNode ret = cur;
+				if (! cur.right.isExternal())
+					cur = findMin(cur.right);
+				else {
+					while (cur.isRightChild()) cur=cur.parent;
+					cur = cur.parent;
+				}
+				return ret;
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException(" remove not implemented");
+				
+			}};
 	}
 	
 	public void print(){
@@ -405,25 +474,64 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 		inNeu = in;
 		if (r.isLeftChild()){
 			inNeu = in.substring(0,sLen-2)+"  ";
-		}//		l = t.closestBefore(21);
-//		System.out.println(l.key()+": "+l.element());
-
+		}
 		prittyPrint(r.left,inNeu+" |");
 	}
 
+	public void check(){
+		// throws a RuntimeException if
+		// something is wrong with the tree!
+		if (root.parent != null) throw new RuntimeException("root has a parent!!");
+		check(root);
+	}
+	
+	/**
+	 * @param root2
+	 */
+	private void check(AVLNode n){
+		// throws a RuntimeException if
+		// something is wrong with the subtree
+		// originating at n
+		if (n.key != null){
+			// check the subtrees
+			check(n.left);
+			check(n.right);
+			// check the node owner:
+			if (n.owner != this)
+					throw new RuntimeException("invalid node "+n.key+":"+n.elem);
+			if (n.height != Math.max(n.left.height,n.right.height)+1) 
+					throw new RuntimeException("height not correct at "+n.key+":"+n.elem);
+			// check the balancing:
+			if (Math.abs(n.left.height-n.right.height)>1) 
+					throw new RuntimeException("not balanced at "+n.key+":"+n.elem);
+			// key order left:
+			if (n.left.key != null && 
+					n.key.compareTo(n.left.key) < 0)
+					throw new RuntimeException("left child is greater at "+n.key+":"+n.elem);
+			// key order right:
+			if (n.right.key != null && 
+					n.key.compareTo(n.right.key) > 0)
+					throw new RuntimeException("right child is smaller at "+n.key+":"+n.elem);
+			// chaining
+			if (n.left.parent != n) throw 
+					new RuntimeException(" left child has wrong parent! "+n.key+":"+n.elem);
+			if (n.right.parent != n) throw 
+					new RuntimeException(" right child has wrong parent! "+n.key+":"+n.elem);
+		}
+	}
+	
 	
 	
 	public static void main(String[] argv){
 		MyAVLTree<Integer, String> t = new MyAVLTree<>();
 		Random rand = new Random(3434534);
-		int n  = 1000000;
+		int n  = 1000;
 		Locator<Integer,String>[] locs = new Locator[n];
 		long time1 = System.currentTimeMillis();
 		for (int i=0;i<n;i++) {
-			locs[i]=t.insert(rand.nextInt(3*n),""+i);
+			locs[i]=t.insert(rand.nextInt(n),""+i);
 			//locs[i]=t.insert(i, "bla");
 		}
-		System.out.println(t.closestAfter(1));
 		for (int i=0;i<n/2;i++) {
 			t.remove(t.find(locs[i].key()));
 		}
@@ -438,7 +546,19 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 		long time2 = System.currentTimeMillis();
 		System.out.println("elapsed time: "+(time2-time1)/1000.0);
 //		t.print();
-//		t.check();
+		t.check();
+		int siz = t.size();
+		Locator loc = t.min();
+//		while (loc != null){
+//			System.out.println(loc.key());
+//			loc = t.next(loc);
+//		}
+		Iterator<Locator<Integer,String>> it = t.sortedLocators();
+		while (it.hasNext()){
+			System.out.println(it.next().key());
+		}
+//		Locator[] l = t.findAll(0);
+//		for (int i = 0; i<l.length;i++) System.out.println(l[i].element());
 	}
 
 }
