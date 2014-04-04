@@ -27,6 +27,37 @@ public class MySkipList<K extends Comparable<? super K>, E> implements
 			key = aKey;
 		}
 
+		/**
+		 * @param aKey
+		 * @param o
+		 */
+		public SLNode(K aKey, E o) {
+			if (aKey.compareTo(minKey)<=0) throw new RuntimeException(aKey+ " must be greater than "+minKey);
+			if (aKey.compareTo(maxKey)>=0) throw new RuntimeException(aKey+ " must be smaller than "+maxKey);
+			key = aKey;
+			elem = o;
+		}
+
+		/**
+		 * @param aKey
+		 * @param o
+		 * @param n
+		 * @param object
+		 */
+		public SLNode(K aKey, E o, SLNode left, SLNode below) {
+			this(aKey,o);
+			this.left = left;
+			this.below = below;
+			if (left!=null) this.right = left.right;
+			if (below != null) this.above = below.above;			
+			if (left != null) left.right = this;			
+			if (right != null) right.left = this;
+			if (below!=null) below.above = this;
+			if (above!=null) above.below = this;
+			
+			
+		}
+
 		/* (non-Javadoc)
 		 * @see examples.Position#element()
 		 */
@@ -84,10 +115,19 @@ public class MySkipList<K extends Comparable<? super K>, E> implements
 	 */
 	@Override
 	public Locator<K, E> find(K key) {
-		// TODO Auto-generated method stub
-		return null;
+		SLNode n = search(key);
+		return n;
 	}
 
+	private SLNode search(K key){
+		SLNode n = topLeft;
+		while (n.below != null){
+			n = n.below;
+			while (n.right.key.compareTo(key) < 0) n=n.right;
+		}		
+		return n;
+	}
+	
 	/* (non-Javadoc)
 	 * @see examples.OrderedDictionary#findAll(java.lang.Comparable)
 	 */
@@ -101,9 +141,10 @@ public class MySkipList<K extends Comparable<? super K>, E> implements
 	 * @see examples.OrderedDictionary#insert(java.lang.Comparable, java.lang.Object)
 	 */
 	@Override
-	public Locator<K, E> insert(K key, E o) {
-		// TODO Auto-generated method stub
-		return null;
+	public Locator<K, E> insert(K key, E o) {		
+		SLNode n = search(key);
+		SLNode newN = new SLNode(key,o,n,null); 
+		return newN;
 	}
 
 	/* (non-Javadoc)
@@ -177,13 +218,24 @@ public class MySkipList<K extends Comparable<? super K>, E> implements
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public void print(){
+		SLNode n = bottomLeft.right;
+		while (n!=bottomRight) {
+			System.out.println(n.key+" : "+n.elem);
+			n=n.right;
+		}
+	}
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+		MySkipList<Integer,String> sl = new MySkipList<>(-1,100);
+		sl.insert(23, "1");
+		sl.insert(13, "2");
+		sl.insert(33, "1");
+		sl.print();
 	}
 
 }
