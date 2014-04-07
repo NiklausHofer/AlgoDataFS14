@@ -124,12 +124,8 @@ public class MySkipList<K extends Comparable<? super K>, E> implements
 	}
 
 	private SLNode search(K key){
-		SLNode n = topLeft;
-		while (n.below != null){
-			n = n.below;
-			while (n.right.key.compareTo(key) < 0) n=n.right;
-		}		
-		return n;
+		// ......
+		return null;
 	}
 	
 	/* (non-Javadoc)
@@ -148,27 +144,8 @@ public class MySkipList<K extends Comparable<? super K>, E> implements
 	public Locator<K, E> insert(K key, E o) {
 		if (key.compareTo(minKey)<=0) throw new RuntimeException("key not bigger than minKey!");
 		if (key.compareTo(maxKey)>=0) throw new RuntimeException("key not smaller than maxKey!");
-		SLNode n = search(key);
-		// we take the rightmost Locator with valid key
-		while (n.right.key.compareTo(key)== 0) n=n.right;		
-		// now we want to insert a node at the nition n.right:
-		SLNode nNew = new SLNode(key,o,n,null);
-		SLNode pb = nNew;
-		boolean generateIndexNode = rand.nextDouble()<0.5;
-		while (generateIndexNode){
-			// System.out.println("index generated");
-			while (n.above==null) n = n.left;
-			n = n.above;
-			// create a new index
-			SLNode index = new SLNode(key,o,n,pb);
-			pb=index;
-			
-			// if n is topLeft we have to expand by one index level
-			if (n == topLeft) expand();
-			generateIndexNode = rand.nextDouble() < 0.5;
-		}
-		size++;
-		return nNew;
+		// ......
+		return null;
 	}
 
 	/**
