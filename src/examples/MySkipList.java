@@ -13,16 +13,17 @@ import java.util.Random;
 public class MySkipList<K extends Comparable<? super K>, E> implements
 		OrderedDictionary<K, E> {
 
-	// class for orr locator nodes
+	// class for locator nodes
 	class SLNode implements Locator<K, E>{
 		K key;
 		E elem;
 		// neighbours
 		SLNode left,right,above,below;
+		
 		Object owner = MySkipList.this;
 		
 		/**
-		 * @param minKey
+		 * @param aKey
 		 */
 		public SLNode(K aKey) {
 			key = aKey;
@@ -46,6 +47,7 @@ public class MySkipList<K extends Comparable<? super K>, E> implements
 		 * @param object
 		 */
 		public SLNode(K aKey, E o, SLNode left, SLNode below) {
+			// inserts a node to the right of 'left' and above 'below'
 			this(aKey,o);
 			this.left = left;
 			this.below = below;
@@ -54,9 +56,7 @@ public class MySkipList<K extends Comparable<? super K>, E> implements
 			if (left != null) left.right = this;			
 			if (right != null) right.left = this;
 			if (below!=null) below.above = this;
-			if (above!=null) above.below = this;
-			
-			
+			if (above!=null) above.below = this;		
 		}
 
 		/* (non-Javadoc)
@@ -118,14 +118,19 @@ public class MySkipList<K extends Comparable<? super K>, E> implements
 	@Override
 	public Locator<K, E> find(K key) {
 		SLNode n = search(key);
+		if (n.key.compareTo(key)!= 0) return null;
 		// find the leftmost occurence of this key
 		if (n.left!= null && n.left.key.compareTo(key)== 0) n=n.left;
 		return n;
 	}
 
 	private SLNode search(K key){
-		// ......
-		return null;
+		SLNode n = topLeft;
+		while (n.below != null){
+			n = n.below;
+			while (key.compareTo(n.right.key) >= 0) n = n.right;
+		}
+		return n;
 	}
 	
 	/* (non-Javadoc)
@@ -144,12 +149,27 @@ public class MySkipList<K extends Comparable<? super K>, E> implements
 	public Locator<K, E> insert(K key, E o) {
 		if (key.compareTo(minKey)<=0) throw new RuntimeException("key not bigger than minKey!");
 		if (key.compareTo(maxKey)>=0) throw new RuntimeException("key not smaller than maxKey!");
-		// ......
-		return null;
+		SLNode n = search(key);
+		// we want to insert after the rightmost occurence of  'key' (if there)
+		while (key.compareTo(n.right.key)>=0) n = n.right;
+		SLNode newN = new SLNode(key,o,n,null);
+		boolean genIndex = rand.nextInt() > 0.5;
+		SLNode in = newN;
+		while (genIndex){
+			// find the left neighbour of the new index node
+			while (n.above == null) n = n.left;
+			n=n.above;
+			// at top?
+			if (n== topLeft) expand();
+			// now we insert an index node
+			in = new SLNode(key,o,n,in);
+			genIndex = rand.nextInt() > 0.5;
+		}
+		return newN;
 	}
 
 	/**
-	 * 
+	 * expand at the top level
 	 */
 	private void expand() {
 		topLeft = new SLNode (minKey,null,null,topLeft);
