@@ -105,16 +105,37 @@ public class SortTest {
 	      int pivot = a[med];
 	      while (i <= j) {
 	            while (a[i] < pivot) i++;
-	            while (a[j] > pivot)j--;
+	            while (a[j] > pivot) j--;
 	            if (i <= j) {
 	            	swap(a,i,j);
 	                i++;
 	                j--;
 	            }
 	      }
-	      return i;
+	      return i; 
 	}	
+
+	static public void quickSelect(int[]a, int p){
+		// after return the elements a[0..p-1] are not bigger 
+		// than a[p..length-1]
+		qSelect(a,0,a.length-1,p);
+	}
 	
+	/**
+	 * @param a
+	 * @param i
+	 * @param j
+	 * @param p
+	 */
+	private static void qSelect(int[] a, int from, int to, int p) {
+		if (from>to) return;
+		int pos = partition(a,from,to);
+		if (pos == p) return;
+		else if (p > pos) qSelect(a,pos,to,p);
+		else qSelect(a,from,pos-1,p);
+	}
+
+
 	/**
 	 * @param a sorted array
 	 * @param e the element we want to find in 'a'
@@ -213,7 +234,7 @@ public class SortTest {
 
 	public static void main(String[] args) {
 		long t1=0,t2=0,te1=0,te2=0,eTime=0,time=0;
-		int n = 10000000;
+		int n = 100001;
 		// we need a random generator
 		Random rand=new Random();
 		//rand.setSeed(54326346); // initialize always in the same state
@@ -221,12 +242,15 @@ public class SortTest {
 		// new array
 		int [] a = new int[n];
 		// fill it randomly
-		for (int i=0;i<a.length;i++) a[i]=rand.nextInt(n);
+		for (int i=0;i<a.length/2;i++) a[i]= i;// rand.nextInt(n);
+		for (int i=a.length/2;i<a.length;i++) a[i]= i-a.length/2;// rand.nextInt(n);
+		for (int i=0;i<a.length;i++) swap(a,i,rand.nextInt(n));// rand.nextInt(n);
 		cnt=0;  // for statistcs reasons
 		// get Time
 		te1=System.currentTimeMillis();
 		t1 = threadBean.getCurrentThreadCpuTime();
-		heapSort(a);
+		quickSelect(a,101);
+		for (int i=0;i <101;i++) System.out.println(a[i]);
 		te2 = System.currentTimeMillis();
 		t2 = threadBean.getCurrentThreadCpuTime();
 		time=t2-t1;

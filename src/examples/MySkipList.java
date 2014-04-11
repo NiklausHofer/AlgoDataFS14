@@ -279,11 +279,15 @@ public class MySkipList<K extends Comparable<? super K>, E> implements
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		MySkipList<Integer,String> sl = new MySkipList<>(-1,100);
+		int n = 1000000;
+		MySkipList<Integer,String> sl = new MySkipList<>(-1,n);
 		Random rand = new Random();
-		for (int i=1;i<200;i++) sl.insert(rand.nextInt(100),""+i);
-		sl.print();
-		System.out.println(sl.height);
+		// 
+		long t1 = System.currentTimeMillis();
+		for (int i=0;i<n;i++) sl.insert(rand.nextInt(n),""+i);
+		long t2 = System.currentTimeMillis();
+		// sl.print();
+		System.out.println(sl.height+" elapsed time: "+(t2-t1)/1000.0);
 	}
 
 }
