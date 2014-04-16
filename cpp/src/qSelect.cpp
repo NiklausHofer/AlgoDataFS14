@@ -56,9 +56,6 @@ int partition( long size, int a[], int from, int to )
   if( a[left] < pivot )
     swap( size, a, left, to );
 
-  if( to-from == 1 )
-    return ++left;
-
   return left;
 }
 
@@ -103,7 +100,7 @@ void qSelect( long size, int a[], int from, int to, int p, int verbosity = 0 )
    *            pos          p
    */
    else if( pos < p )
-     qSelect( size, a, pos, to, p, verbosity );
+     qSelect( size, a, pos+1, to, p, verbosity );
   /*
    *  partitioned             unpartitioned
    * |-----------+-----------|--------|
@@ -203,12 +200,12 @@ int main( int ac, char* av[] )
   if( verbose )
     cout << "n: " << n << endl;
 
-  qSelect_start( size, a, n, verbose );
+  qSelect_start( size, a, n-1, verbose );
 
   if( verbose )
     printArray( size, a );
 
-  if( testSelect( size, a, n, verbose ) )
+  if( testSelect( size, a, n-1, verbose ) )
     cout << "Successful!" << endl;
   else
     cout << "FAIL!" << endl;
