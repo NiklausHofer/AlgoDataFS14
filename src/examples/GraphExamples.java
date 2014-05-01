@@ -9,19 +9,56 @@ import java.util.Random;
 
 public class GraphExamples<V,E> {
 
+	final private Object NUMBER = new Object();
+	final private Object VISITED = new Object();
+	
 	private Graph<V,E> g;
 	public GraphExamples(Graph<V,E> g){
 		this.g=g;
 	}
+
+	public void setNumberAttribute(){
+		Iterator<Vertex<V>> it = g.vertices();
+		int i=0;
+		while(it.hasNext()){
+			Vertex v = it.next();
+			v.set(NUMBER, i++);
+		}
+	}
 	
-	
-	
+	public boolean isConnected(){
+		// recursively visit all vertices which
+		// we can reach from a arbitrary vertex
+		depthFirstSearch(g.aVertex());
+		int n=0;
+		Iterator<Vertex<V>> it = g.vertices();
+		while (it.hasNext()){
+			Vertex<V>  u = it.next();
+			if (u.has(VISITED)) {
+				u.destroy(VISITED);
+				n++;
+			}
+		}
+		return n==g.numberOfVertices();
+	}
+
+	void depthFirstSearch(Vertex<V> v){
+		// recursive depth first search  
+		v.set(VISITED,true);
+		Iterator<Edge<E>> eIt = g.incidentEdges(v);
+		while (eIt.hasNext()){
+			Edge<E> e = eIt.next();
+			Vertex<V> w = g.opposite(e, v);
+			if ( ! w.has(VISITED)) depthFirstSearch(w);
+		}
+	}
 	
 	/**
 	 * @param args
 	 * 
 	 */
 	public static void main(String[] args) {
+		// make an undirected graph
 		IncidenceListGraph<String,String> g = 
 			new IncidenceListGraph<>(false);
 		GraphExamples<String,String> ge = new GraphExamples<>(g);
@@ -72,7 +109,6 @@ public class GraphExamples<V,E> {
 		Edge<String> eEI = g.insertEdge(vE, vI, "EI"); 
 		Edge<String> eFI = g.insertEdge(vF, vI, "FI"); 
 		Edge<String> eGJ = g.insertEdge(vG, vJ, "GJ");
-
 		Edge<String> eGK = g.insertEdge(vG, vK, "GK"); 
 		Edge<String> eGL = g.insertEdge(vG, vL, "GL"); 
 		Edge<String> eHL = g.insertEdge(vH, vL, "HL"); 
@@ -86,9 +122,9 @@ public class GraphExamples<V,E> {
 		Edge<String> eMN = g.insertEdge(vM, vN, "MN"); 
 		Edge<String> eNO = g.insertEdge(vN, vO, "NO"); 
 		Edge<String> eOP = g.insertEdge(vO, vP, "OP"); 	
-		System.out.println(g);
-		Iterator<Edge<String>> eit = g.edges();
-		Random rand = new Random();
+//		System.out.println(g);
+//		ge.setNumberAttribute();
+		System.out.println(ge.isConnected());
 	}
 }
 
