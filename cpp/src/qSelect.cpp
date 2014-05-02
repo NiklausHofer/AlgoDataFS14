@@ -167,6 +167,12 @@ int main( int ac, char* av[] )
     return 0;
   }
 
+  if( n <= 0 )
+  {
+    cout << "Please provide an n-value bigger 0" << endl;
+    return 0;
+  }
+
   verbose = vm.count("verbose");
   if( verbose )
     cout << "running in verbose mode" << endl;
